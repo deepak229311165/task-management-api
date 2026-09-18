@@ -17,24 +17,29 @@ async def summarize_todos():
     return TodoSummaryResponse(summary=summary_text)
 
 @router.post("/")
-async def create_task(new_task: TodoCreate):
+async def create_task(new_task: TodoCreate, current_user = Depends(get_current_user)):
     try:
-        record_id = await db_queries.insert_todo(new_task)
+        record_id = await db_queries.insert_todo(new_task, user_id = current_user.id)
         return{"status_code":200, "id": record_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"some error occurred: {e}")
 
 @router.post("/ai")
-async def create_task_from_text(payload: TodoAICreate):
+async def create_task_from_text(payload: TodoAICreate, current_user = Depends(get_current_user)):
     try:
         parsed_task = await llm_service.parse_natural_language_todo(payload.text)
-        record_id = await db_queries.insert_todo(parsed_task)
-        return{
-            "status_code": 200,
-            "id": record_id,
-            "title": parsed_task.title,
-            "description": parsed_task.description,
-        }
+
+        created_tasks = []
+        for task in parsed_task: 
+            record_id = await db_queries.insert_todo(task, user_id = current_user.id)
+            created_tasks.append({
+                "id": record_id,
+                "title": task.title,
+                "description": task.description,
+                "due_date": task.due_date
+        })
+        return created_tasks
+        
     except HTTPException:
         raise
     except Exception as e:
@@ -53,7 +58,7 @@ async def update_task(task_id: int, updated_task: TodoUpdate):
         await db_queries.update_todo_by_id(task_id, update_values)
         return {"status code": 200, "message": "Task updated successfully"}
     except HTTPException:
-        raise 
+        raise   
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"some error occurred: {e}")
 

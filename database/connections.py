@@ -16,8 +16,11 @@ todos_table = sqlalchemy.Table(
     "todos",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=False),
     sqlalchemy.Column("title", sqlalchemy.String, nullable=False),
     sqlalchemy.Column("description", sqlalchemy.String, nullable=True),
+    sqlalchemy.Column("due_date", sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column("reminder_sent", sqlalchemy.Boolean, default=False, nullable=False),
     sqlalchemy.Column("is_active", sqlalchemy.Boolean, default=False),
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.now(UTC),)
 )

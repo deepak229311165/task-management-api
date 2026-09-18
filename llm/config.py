@@ -1,14 +1,13 @@
-from anthropic import AsyncAnthropic
-from google import genai
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.6-flash")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL")
 
-llm_client = genai.Client(api_key=GEMINI_API_KEY)
+llm_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 
 
