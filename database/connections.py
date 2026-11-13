@@ -22,7 +22,7 @@ todos_table = sqlalchemy.Table(
     sqlalchemy.Column("due_date", sqlalchemy.DateTime, nullable=True),
     sqlalchemy.Column("reminder_sent", sqlalchemy.Boolean, default=False, nullable=False),
     sqlalchemy.Column("is_active", sqlalchemy.Boolean, default=False),
-    sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.now(UTC),)
+    sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=lambda: datetime.now(UTC))
 )
 
 users = sqlalchemy.Table(
